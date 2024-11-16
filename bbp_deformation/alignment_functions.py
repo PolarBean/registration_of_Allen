@@ -18,13 +18,15 @@ def calculate_affine(srcPoints, dstPoints):
     affine_matrix, _, _, _ = np.linalg.lstsq(srcPoints, dstPoints, rcond=None)
     return affine_matrix.T
 
+
 def read_ants_affine(aff_path):
     ants_affine = ants.read_transform(aff_path)
     before_points = np.array([[0, 0], [0, 1], [1, 0]])
     after_points = np.array([ants_affine.apply_to_point(p) for p in before_points])
-    #calculate the affine matrix
+    # calculate the affine matrix
     affine_matrix = calculate_affine(before_points, after_points)
     return affine_matrix
+
 
 def apply_affine_to_points(affine_matrix, points):
     # Convert the points to homogeneous coordinates
@@ -35,24 +37,29 @@ def apply_affine_to_points(affine_matrix, points):
     points_transformed_2d = points_transformed_homogeneous[:, :2]
     return points_transformed_2d
 
+
 def read_nonlinear(non_linear_path):
     non_linear = nib.load(non_linear_path)
     non_linear_data = non_linear.get_fdata()
-    #remove dimensions of size 1
+    # remove dimensions of size 1
     non_linear_data = np.squeeze(non_linear_data)
     height = non_linear_data.shape[0]
     width = non_linear_data.shape[1]
     return non_linear_data, height, width
 
-def apply_nonlinear_to_image(moving_image, non_linear_data, mode='nearest'):
-    non_linear_reorder = np.moveaxis(non_linear_data, [0, 1, 2], [1,2,0])
-    grid = np.mgrid[0:moving_image.shape[0], 0:moving_image.shape[1]]
+
+def apply_nonlinear_to_image(moving_image, non_linear_data, mode="nearest"):
+    non_linear_reorder = np.moveaxis(non_linear_data, [0, 1, 2], [1, 2, 0])
+    grid = np.mgrid[0 : moving_image.shape[0], 0 : moving_image.shape[1]]
     warp_grid = non_linear_reorder + grid
-    warped_image = scipy.ndimage.map_coordinates(moving_image, warp_grid, order=0, mode=mode)
+    warped_image = scipy.ndimage.map_coordinates(
+        moving_image, warp_grid, order=0, mode=mode
+    )
     return warped_image
 
-def apply_affine_to_image(moving_image, affine_matrix, output_shape, mode='constant'):
-    #convert image to grayscale
+
+def apply_affine_to_image(moving_image, affine_matrix, output_shape, mode="constant"):
+    # convert image to grayscale
     if len(moving_image.shape) == 3:
         moving_image = rgb2gray(moving_image)
     output_height, output_width = output_shape
@@ -75,7 +82,9 @@ def apply_affine_to_image(moving_image, affine_matrix, output_shape, mode='const
         moving_image = moving_image[:, :pad_right]
         pad_right = 0
 
-    moving_image = np.pad(moving_image, ((pad_top, pad_bottom ), (pad_left, pad_right)), mode=mode)
-    affine_matrix[2,:] = [0, 0, 1]
+    moving_image = np.pad(
+        moving_image, ((pad_top, pad_bottom), (pad_left, pad_right)), mode=mode
+    )
+    affine_matrix[2, :] = [0, 0, 1]
     adjusted_image = affine_transform(moving_image, affine_matrix, order=0)
     return adjusted_image
