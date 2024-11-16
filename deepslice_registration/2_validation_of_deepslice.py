@@ -13,7 +13,7 @@ for af in alignment_files:
     df, target = DeepSlice.read_and_write.QuickNII_functions.read_QUINT_JSON(af)
     percentiles = [17, 35, 52, 69, 86]
     values = np.percentile(df["nr"], [percentiles], method="nearest")[0]
-    df[df["nr"].isin(values)]
+    df = df[df["nr"].isin(values)]
     df["Filenames"] = animal_name + "/" + df["Filenames"]
     combined_file.append(df)
 
