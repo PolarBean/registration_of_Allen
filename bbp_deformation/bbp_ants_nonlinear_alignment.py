@@ -286,7 +286,7 @@ def one_ISH_dataset_nonlinear_warping(input_json_folder = "", input_root_folder 
 
                         # Reference slice
                         alignment = json_data['slices'][j]['anchoring']
-                        ref_slice = generate_target_slice(alignment, nissl_vol, 14)
+                        ref_slice = generate_target_slice(alignment, nissl_vol, 24)
 
                         # if output_reg_path == "/gpfs/bbp.cscs.ch/project/proj137/scratch/piluso/ISH4harry/01_non_linear_warping/ISH/05-2788/71717630/71661738_s0248_Affine_SyN.nrrd":
                         #     output_nissl_path = output_reg_path.replace(".nrrd", "_nissl.nrrd")
