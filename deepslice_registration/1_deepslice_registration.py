@@ -36,7 +36,7 @@ for folder in folders[-4:-3]:
     section_thickness = np.round(section_thickness)
     Model.enforce_index_spacing(section_thickness)
     specimen = folder.split("/")[-3]
-    out_path = "/".join(folder.split("/")[:-2]) + "/" + specimen + ".json"
+    out_path = "/".join(folder.split("/")[:-2]) + "/" + specimen 
 
     Model.save_predictions(out_path)
     Model.save_predictions(f"registrations/{specimen}")
